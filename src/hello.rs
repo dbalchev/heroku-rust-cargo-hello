@@ -1,13 +1,10 @@
-#![feature(os)]
-#![feature(io)]
 #![feature(core)]
 
 extern crate iron;
 extern crate router;
 
-use std::str::FromStr;
-use std::os::getenv;
-use std::old_io::net::ip::{Ipv4Addr, Port};
+use std::env;
+use std::num;
 use iron::{Iron, Request, Response, IronResult};
 use router::Router;
 use iron::status;
@@ -26,11 +23,15 @@ fn hello_name(req: &mut Request) -> IronResult<Response> {
     Ok(resp)
 }
 
+type Port = u16;
+static DEFAULT_PORT: Port = 8080;
+
 /// Look up our server port number in PORT, for compatibility with Heroku.
 fn get_server_port() -> Port {
-    getenv("PORT")
-        .and_then(|s| FromStr::from_str(&s[]))
-        .unwrap_or(8080)
+    match env::var("PORT") {
+        Ok(val) => num::from_str_radix(&val, 10).unwrap_or(DEFAULT_PORT),
+        Err(_) => DEFAULT_PORT
+    }
 }
 
 /// Configure and run our server.
@@ -41,5 +42,5 @@ fn main() {
     router.get("/:name", hello_name);
 
     // Run the server.
-    Iron::new(router).listen((Ipv4Addr(0, 0, 0, 0), get_server_port())).unwrap();
+    Iron::new(router).http(("0.0.0.0", get_server_port())).unwrap();
 }
