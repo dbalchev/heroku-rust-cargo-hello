@@ -5,6 +5,6 @@
   "success_url": "/",
   "keywords": ["rust", "iron"],
   "env": {
-    "BUILDPACK_URL": "https://github.com/azolotko/heroku-buildpack-rust.git"
+    "BUILDPACK_URL": "https://github.com/dbalchev/heroku-buildpack-rust.git"
   }
 }
